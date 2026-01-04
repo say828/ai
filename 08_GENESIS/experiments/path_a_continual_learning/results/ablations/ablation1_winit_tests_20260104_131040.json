@@ -1,0 +1,8 @@
+{
+  "learned_freeze_vs_random_freeze": {
+    "accuracy": {
+      "t_statistic": -4.362326465289127,
+      "p_value": 0.0024051222147073266,
+      "cohen_d": -3.0846306253554836,
+      "significant": true,
+      "baseline_better": 

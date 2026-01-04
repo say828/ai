@@ -1,0 +1,34 @@
+{
+  "hebbian_vs_sgd": {
+    "accuracy": {
+      "t_statistic": -4.136123835128024,
+      "p_value": 0.0032707751221042053,
+      "cohen_d": -2.9246812116463357,
+      "significant": true,
+      "baseline_better": false
+    },
+    "forgetting": {
+      "t_statistic": -2.3756124838652446,
+      "p_value": 0.04485177648671001,
+      "cohen_d": -1.6798116968125323,
+      "significant": true,
+      "baseline_better": true
+    }
+  },
+  "hebbian_vs_adam": {
+    "accuracy": {
+      "t_statistic": -4.604113228897838,
+      "p_value": 0.0017460408165413186,
+      "cohen_d": -3.2555996855043525,
+      "significant": true,
+      "baseline_better": false
+    },
+    "forgetting": {
+      "t_statistic": -2.324969279421252,
+      "p_value": 0.04854140819129087,
+      "cohen_d": -1.6440015435291684,
+      "significant": true,
+      "baseline_better": true
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "with_coherence_vs_without_coherence": {
+    "accuracy": {
+      "t_statistic": 2.2886006608965617,
+      "p_value": 0.05137695145375695,
+      "cohen_d": 1.6182850467479732,
+      "significant": false,
+      "baseline_better": true
+    },
+    "forgetting": {
+      "t_statistic": 0.9999999999999998,
+      "p_value": 0.34659350708733405,
+      "cohen_d": 0.7071067811865475,
+      "significant": false,
+      "baseline_better": false
+    }
+  },
+  "with_coherence_vs_strict_coherence": {
+    "accuracy": {
+      "t_statistic": 1.1424533592147308,
+      "p_value": 0.286302717917058,
+      "cohen_d": 0.807836517490087,
+      "significant": false,
+      "baseline_better": true
+    },
+    "forgetting": {
+      "t_statistic": -0.32337929180801356,
+      "p_value": 0.7546993120334827,
+      "cohen_d": -0.22866369013274973,
+      "significant": false,
+      "baseline_better": true
+    }
+  }
+}

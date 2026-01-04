@@ -1,0 +1,34 @@
+{
+  "learned_freeze_vs_random_freeze": {
+    "accuracy": {
+      "t_statistic": -4.362326465289127,
+      "p_value": 0.0024051222147073266,
+      "cohen_d": -3.0846306253554836,
+      "significant": true,
+      "baseline_better": false
+    },
+    "forgetting": {
+      "t_statistic": -1.4011444445869514,
+      "p_value": 0.1987494450004487,
+      "cohen_d": -0.990758738189292,
+      "significant": false,
+      "baseline_better": true
+    }
+  },
+  "learned_freeze_vs_learned_continue": {
+    "accuracy": {
+      "t_statistic": -0.16981911567122943,
+      "p_value": 0.8693682006805538,
+      "cohen_d": -0.12008024826622903,
+      "significant": false,
+      "baseline_better": false
+    },
+    "forgetting": {
+      "t_statistic": -1.4953704028351846,
+      "p_value": 0.1731806750161803,
+      "cohen_d": -1.0573865522304182,
+      "significant": false,
+      "baseline_better": true
+    }
+  }
+}

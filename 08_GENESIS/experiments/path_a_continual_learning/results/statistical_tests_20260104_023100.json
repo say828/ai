@@ -1,0 +1,7 @@
+{
+  "autopoietic_vs_finetuning": {
+    "accuracy": {
+      "t_statistic": NaN,
+      "p_value": NaN,
+      "cohen_d": 0.0,
+      "significant": 

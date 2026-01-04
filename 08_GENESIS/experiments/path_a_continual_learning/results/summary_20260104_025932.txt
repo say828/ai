@@ -1,0 +1,62 @@
+======================================================================
+CONTINUAL LEARNING EXPERIMENT RESULTS
+======================================================================
+
+Trials: 3
+Epochs per task: 3
+Tasks: 5 (Split-MNIST)
+
+----------------------------------------------------------------------
+AVERAGE ACCURACY (higher is better)
+----------------------------------------------------------------------
+  autopoietic    : 0.7575 +/- 0.0575
+  finetuning     : 0.9904 +/- 0.0011
+  ewc            : 0.9928 +/- 0.0005
+  replay         : 0.9910 +/- 0.0012
+
+----------------------------------------------------------------------
+FORGETTING MEASURE (lower is better)
+----------------------------------------------------------------------
+  autopoietic    : 0.0003 +/- 0.0002
+  finetuning     : 0.0060 +/- 0.0007
+  ewc            : 0.0006 +/- 0.0001
+  replay         : 0.0053 +/- 0.0013
+
+----------------------------------------------------------------------
+COMPUTATIONAL COST
+----------------------------------------------------------------------
+  autopoietic    : Time=20.1s, FLOPs=1.21e+11
+  finetuning     : Time=2.2s, FLOPs=5.14e+10
+  ewc            : Time=8.1s, FLOPs=6.84e+10
+  replay         : Time=5.1s, FLOPs=1.13e+11
+
+----------------------------------------------------------------------
+STATISTICAL TESTS (Autopoietic vs Baselines)
+----------------------------------------------------------------------
+
+  autopoietic_vs_finetuning:
+    Accuracy:   t=-5.728, p=0.0046, d=-5.728
+                *** SIGNIFICANT ***
+    Forgetting: t=-11.210, p=0.0004, d=-11.210
+                *** SIGNIFICANT ***
+
+  autopoietic_vs_ewc:
+    Accuracy:   t=-5.786, p=0.0044, d=-5.786
+                *** SIGNIFICANT ***
+    Forgetting: t=-2.518, p=0.0655, d=-2.518
+                not significant
+
+  autopoietic_vs_replay:
+    Accuracy:   t=-5.742, p=0.0046, d=-5.742
+                *** SIGNIFICANT ***
+    Forgetting: t=-5.279, p=0.0062, d=-5.279
+                *** SIGNIFICANT ***
+
+======================================================================
+CONCLUSION
+======================================================================
+
+[PASS] Autopoietic has LOWER forgetting than Fine-tuning
+[PASS] Autopoietic forgetting is comparable to or better than EWC
+
+======================================================================

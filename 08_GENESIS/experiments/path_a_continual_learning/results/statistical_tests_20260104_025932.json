@@ -1,0 +1,44 @@
+{
+  "autopoietic_vs_finetuning": {
+    "accuracy": {
+      "t_statistic": -5.72837906740839,
+      "p_value": 0.004597991430638238,
+      "cohen_d": -5.72837906740839,
+      "significant": true
+    },
+    "forgetting": {
+      "t_statistic": -11.210472142672097,
+      "p_value": 0.00036054694255651423,
+      "cohen_d": -11.210472142672097,
+      "significant": true
+    }
+  },
+  "autopoietic_vs_ewc": {
+    "accuracy": {
+      "t_statistic": -5.786144022300729,
+      "p_value": 0.0044331234134119815,
+      "cohen_d": -5.78614402230073,
+      "significant": true
+    },
+    "forgetting": {
+      "t_statistic": -2.518250052947004,
+      "p_value": 0.06547875677079144,
+      "cohen_d": -2.518250052947004,
+      "significant": false
+    }
+  },
+  "autopoietic_vs_replay": {
+    "accuracy": {
+      "t_statistic": -5.74190545735033,
+      "p_value": 0.00455872067914843,
+      "cohen_d": -5.74190545735033,
+      "significant": true
+    },
+    "forgetting": {
+      "t_statistic": -5.278785972380301,
+      "p_value": 0.006175222432324246,
+      "cohen_d": -5.2787859723803,
+      "significant": true
+    }
+  }
+}
