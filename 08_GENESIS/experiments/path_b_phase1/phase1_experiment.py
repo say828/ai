@@ -94,9 +94,13 @@ class Phase1Experiment:
         # Create environment and population
         env = FullALifeEnvironment(size=self.grid_size, seed=seed)
         pop = FullPopulationManager(
-            env, 
-            initial_pop=self.initial_pop, 
-            max_population=self.max_pop
+            env,
+            initial_pop=self.initial_pop,
+            max_population=self.max_pop,
+            min_population=self.initial_pop // 2,  # Maintain at least 50% of initial pop
+            enable_teacher=True,  # Enable infinite learning
+            teacher_update_interval=100,
+            teacher_learning_rate=0.1
         )
         
         # Reset history
@@ -126,12 +130,13 @@ class Phase1Experiment:
                 elapsed = time.time() - start_time
                 rate = step / elapsed if elapsed > 0 else 0
                 
+                teacher_str = f" | Teacher: {stats['teacher_knowledge_level']:.3f}" if 'teacher_knowledge_level' in stats else ""
                 print(f"Step {step:5d} | Pop: {stats['population_size']:3d} | "
                       f"Coh: {stats['avg_coherence']:.3f} | "
                       f"Births: {stats['total_births']:4d} | "
                       f"Deaths: {stats['total_deaths']:4d} | "
                       f"QD: {stats['qd_coverage']:3d} | "
-                      f"Rate: {rate:.1f} steps/s")
+                      f"Rate: {rate:.1f} steps/s{teacher_str}")
             
             # Check extinction
             if stats['population_size'] == 0:
@@ -161,6 +166,10 @@ class Phase1Experiment:
             'survival_analysis': survival_analysis,
             'diversity': diversity
         }
+
+        # Add teacher statistics if available
+        if pop.teacher:
+            result['teacher_stats'] = pop.teacher.get_statistics()
         
         print(f"\nCompleted in {elapsed:.1f}s ({elapsed/60:.1f} min)")
         print(f"Final population: {final_stats['population_size']}")
@@ -168,7 +177,18 @@ class Phase1Experiment:
         print(f"Total deaths: {final_stats['total_deaths']}")
         print(f"QD Coverage: {qd_metrics['coverage']}")
         print(f"Coherence-Age Correlation: {survival_analysis.get('coherence_age_correlation', 'N/A')}")
-        
+
+        # Add teacher statistics
+        if 'teacher_knowledge_level' in final_stats:
+            print(f"\n📚 Teacher Network:")
+            print(f"  Knowledge Level: {final_stats['teacher_knowledge_level']:.3f}")
+            print(f"  Updates: {final_stats['teacher_update_count']}")
+            if pop.teacher:
+                teacher_stats = pop.teacher.get_statistics()
+                if 'coherence_history' in teacher_stats:
+                    hist = teacher_stats['coherence_history']
+                    print(f"  Coherence Progress: {hist['min']:.3f} → {hist['max']:.3f} (Δ={hist['max']-hist['min']:.3f})")
+
         return result
     
     def run_baseline(self, agent_class, name: str, seed: int) -> Dict:

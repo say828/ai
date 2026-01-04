@@ -1,0 +1,44 @@
+{
+  "name": "medium_experiment",
+  "description": "Medium-scale experiment for development and testing (1-2 hours)",
+
+  "experiment": {
+    "steps": 1000,
+    "checkpoint_interval": 100,
+    "log_interval": 50
+  },
+
+  "environment": {
+    "size": 40,
+    "initial_population": 100
+  },
+
+  "phases": {
+    "phase4a": true,
+    "phase4b": true,
+    "phase4c": true
+  },
+
+  "phase4b_options": {
+    "novelty_search": true,
+    "map_elites": true,
+    "poet": false
+  },
+
+  "phase4c_options": {
+    "message_dim": 8,
+    "influence_dim": 32,
+    "local_radius": 5.0
+  },
+
+  "optimization": {
+    "use_batch_processing": true,
+    "use_cached_coherence": true,
+    "use_sparse_map_elites": true,
+    "device": "cpu"
+  },
+
+  "output": {
+    "output_dir": "results/medium_experiments"
+  }
+}

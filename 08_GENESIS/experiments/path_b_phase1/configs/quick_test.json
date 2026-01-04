@@ -1,0 +1,44 @@
+{
+  "name": "quick_test",
+  "description": "Quick test configuration for rapid validation (5-10 minutes)",
+
+  "experiment": {
+    "steps": 100,
+    "checkpoint_interval": 50,
+    "log_interval": 20
+  },
+
+  "environment": {
+    "size": 30,
+    "initial_population": 50
+  },
+
+  "phases": {
+    "phase4a": true,
+    "phase4b": true,
+    "phase4c": true
+  },
+
+  "phase4b_options": {
+    "novelty_search": true,
+    "map_elites": true,
+    "poet": false
+  },
+
+  "phase4c_options": {
+    "message_dim": 8,
+    "influence_dim": 32,
+    "local_radius": 5.0
+  },
+
+  "optimization": {
+    "use_batch_processing": false,
+    "use_cached_coherence": false,
+    "use_sparse_map_elites": false,
+    "device": "cpu"
+  },
+
+  "output": {
+    "output_dir": "results/quick_tests"
+  }
+}

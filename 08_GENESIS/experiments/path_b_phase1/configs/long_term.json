@@ -1,0 +1,44 @@
+{
+  "name": "long_term",
+  "description": "Long-term research experiment (4-8 hours unoptimized, 30-60 min optimized)",
+
+  "experiment": {
+    "steps": 10000,
+    "checkpoint_interval": 1000,
+    "log_interval": 100
+  },
+
+  "environment": {
+    "size": 50,
+    "initial_population": 300
+  },
+
+  "phases": {
+    "phase4a": true,
+    "phase4b": true,
+    "phase4c": true
+  },
+
+  "phase4b_options": {
+    "novelty_search": true,
+    "map_elites": true,
+    "poet": false
+  },
+
+  "phase4c_options": {
+    "message_dim": 8,
+    "influence_dim": 32,
+    "local_radius": 5.0
+  },
+
+  "optimization": {
+    "use_batch_processing": true,
+    "use_cached_coherence": true,
+    "use_sparse_map_elites": true,
+    "device": "cpu"
+  },
+
+  "output": {
+    "output_dir": "results/long_term"
+  }
+}

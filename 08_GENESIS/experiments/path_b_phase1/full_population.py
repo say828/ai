@@ -17,6 +17,7 @@ import json
 
 from full_environment import FullALifeEnvironment
 from full_agent import FullAutopoieticAgent
+from teacher_network import TeacherNetwork, EpisodicMemory
 
 
 @dataclass
@@ -48,7 +49,11 @@ class FullPopulationManager:
                  initial_pop: int = 100,
                  max_population: int = 500,
                  mutation_rate: float = 0.05,
-                 mutation_scale: float = 0.1):
+                 mutation_scale: float = 0.1,
+                 min_population: int = 50,
+                 enable_teacher: bool = True,
+                 teacher_update_interval: int = 100,
+                 teacher_learning_rate: float = 0.1):
         """
         Args:
             env: Environment instance
@@ -56,11 +61,31 @@ class FullPopulationManager:
             max_population: Maximum population cap
             mutation_rate: Probability of mutating each weight
             mutation_scale: Standard deviation of mutations
+            min_population: Minimum population to maintain (prevents extinction)
+            enable_teacher: Enable Teacher Network for infinite learning
+            teacher_update_interval: Steps between teacher updates
+            teacher_learning_rate: Teacher EMA learning rate
         """
         self.env = env
         self.max_population = max_population
+        self.min_population = min_population
         self.mutation_rate = mutation_rate
         self.mutation_scale = mutation_scale
+        self.enable_teacher = enable_teacher
+        self.teacher_update_interval = teacher_update_interval
+
+        # Teacher Network for infinite learning
+        if self.enable_teacher:
+            self.teacher = TeacherNetwork(
+                state_dim=128,
+                sensor_dim=370,
+                action_dim=5,
+                learning_rate=teacher_learning_rate
+            )
+            self.memory = EpisodicMemory(capacity=10000)
+        else:
+            self.teacher = None
+            self.memory = None
         
         # Agent tracking
         self.agents: List[FullAutopoieticAgent] = []
@@ -175,16 +200,37 @@ class FullPopulationManager:
                     offspring.append(child)
         
         self.agents.extend(offspring)
-        
+
         # Increment generation if births occurred
         if offspring:
             self.generation_counter += 1
-        
-        # 6. Update QD archive (every 10 steps)
+
+        # 6. Update Teacher Network from elite agents (if enabled)
+        if self.enable_teacher and self.current_step % self.teacher_update_interval == 0:
+            elite_agents = self._get_elite_agents(top_k_percent=0.2)  # Top 20%
+            if elite_agents:
+                teacher_stats = self.teacher.distill_from_elite(elite_agents, verbose=False)
+
+                # Log teacher update (only on significant intervals)
+                if self.current_step % (self.teacher_update_interval * 10) == 0:
+                    print(f"  📚 Teacher Update #{teacher_stats['update_count']}: "
+                          f"Elite={teacher_stats['n_elite']}, "
+                          f"Coherence={teacher_stats['avg_elite_coherence']:.3f}, "
+                          f"Knowledge={teacher_stats['teacher_knowledge_level']:.3f}")
+
+        # 7. Maintain minimum population (prevent extinction)
+        if len(self.agents) < self.min_population:
+            needed = self.min_population - len(self.agents)
+            spawned = self._spawn_agents_from_teacher(needed)
+            if spawned and self.current_step % 100 == 0:
+                print(f"  🔄 Spawned {len(spawned)} agents from Teacher (pop: {len(self.agents)} → {len(self.agents) + len(spawned)})")
+            self.agents.extend(spawned)
+
+        # 8. Update QD archive (every 10 steps)
         if self.current_step % 10 == 0:
             self._update_qd_archive()
-        
-        # 7. Compute and return statistics
+
+        # 9. Compute and return statistics
         return self.get_statistics()
     
     def _build_spatial_index(self) -> Dict[Tuple[int, int], List[FullAutopoieticAgent]]:
@@ -354,7 +400,110 @@ class FullPopulationManager:
                     'behavior_descriptor': bd.copy(),
                     'step': self.current_step
                 }
-    
+
+    def _get_elite_agents(self, top_k_percent: float = 0.2) -> List[FullAutopoieticAgent]:
+        """
+        Get elite agents based on coherence and age
+
+        Elite agents are those with:
+        1. High coherence (organizational quality)
+        2. Sufficient age (proven survival)
+
+        These agents donate their genomes to the Teacher Network.
+
+        Args:
+            top_k_percent: Fraction of population to consider elite (default 20%)
+
+        Returns:
+            List of elite agents
+        """
+        if not self.agents:
+            return []
+
+        # Filter agents with sufficient age (at least 20 steps old)
+        mature_agents = [a for a in self.agents if a.age >= 20]
+
+        if not mature_agents:
+            return []
+
+        # Sort by recent coherence (moving average of last 20 steps)
+        def agent_fitness(agent):
+            if agent.coherence_history:
+                recent_coherence = np.mean(list(agent.coherence_history)[-20:])
+            else:
+                recent_coherence = 0.5
+            # Add small age bonus to favor experienced agents
+            age_bonus = min(agent.age / 1000, 0.1)
+            return recent_coherence + age_bonus
+
+        mature_agents.sort(key=agent_fitness, reverse=True)
+
+        # Take top k%
+        k = max(1, int(len(mature_agents) * top_k_percent))
+        elite = mature_agents[:k]
+
+        return elite
+
+    def _spawn_agents_from_teacher(self, n: int) -> List[FullAutopoieticAgent]:
+        """
+        Spawn new agents initialized from Teacher Network
+
+        This is the KEY INNOVATION that prevents knowledge loss!
+
+        Without Teacher:
+          - New agent = random weights → starts at coherence ~0.5
+          - Must relearn everything from scratch
+
+        With Teacher:
+          - New agent = teacher weights + small mutation
+          - Starts with accumulated population knowledge
+          - Coherence may start at ~0.7+ (inherited wisdom!)
+
+        Args:
+            n: Number of agents to spawn
+
+        Returns:
+            List of newly spawned agents
+        """
+        spawned = []
+
+        for _ in range(n):
+            # Random spawn position
+            x = np.random.randint(0, self.env.size)
+            y = np.random.randint(0, self.env.size)
+
+            # Initialize from Teacher (if available) or random
+            if self.enable_teacher and self.teacher is not None:
+                genome = self.teacher.initialize_student(
+                    mutation_rate=self.mutation_rate,
+                    mutation_scale=self.mutation_scale
+                )
+            else:
+                genome = None  # Will use random init
+
+            # Create agent
+            agent = FullAutopoieticAgent(
+                x=x,
+                y=y,
+                agent_id=self.next_id,
+                genome=genome,
+                parent_id=None  # Teacher-spawned agents have no parent
+            )
+            agent.birth_time = self.current_step
+
+            # Add to phylogeny
+            self.phylogeny[agent.id] = PhylogenyNode(
+                agent_id=agent.id,
+                parent_id=None,
+                birth_time=self.current_step
+            )
+
+            spawned.append(agent)
+            self.next_id += 1
+            self.total_births += 1
+
+        return spawned
+
     def get_statistics(self) -> Dict:
         """Compute comprehensive statistics"""
         if not self.agents:
@@ -386,7 +535,7 @@ class FullPopulationManager:
             materials.append(agent.material)
             ages.append(agent.age)
         
-        return {
+        stats = {
             'step': self.current_step,
             'population_size': len(self.agents),
             'avg_coherence': float(np.mean(coherences)) if coherences else 0.5,
@@ -404,6 +553,13 @@ class FullPopulationManager:
             'qd_coverage': len(self.qd_archive),
             'extinct': False
         }
+
+        # Add teacher statistics if enabled
+        if self.enable_teacher and self.teacher is not None:
+            stats['teacher_knowledge_level'] = self.teacher.knowledge_level
+            stats['teacher_update_count'] = self.teacher.update_count
+
+        return stats
     
     def get_qd_metrics(self) -> Dict:
         """Compute Quality-Diversity metrics"""
