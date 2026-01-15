@@ -23,14 +23,20 @@ pip install numpy matplotlib scipy
 ### Running Experiments
 
 ```bash
-# Run individual paradigm experiments
-python 01_LAML/laml_experiment.py        # Failed baseline
-python 02_QED/qed_optimizer.py           # First success: +26-65%
-python 03_LAML_Q/laml_q.py               # LAML redeemed: +26.68-43.90%
-python 05_COMP/comp_optimizer.py         # Compositional: 2/3 wins
-python 06_PIO/pio_optimizer.py           # Path integral: XOR specialist
-python 07_ULTIMATE/test_ultimate.py      # Meta-learner: Concept proven
-python 08_GENESIS/v2.0/experiments/*/main.py  # Autopoietic system
+# Physics-based optimizers
+python physics_based/01_LAML/laml_experiment.py     # Failed baseline
+python physics_based/02_LAML_Q/laml_q.py            # LAML redeemed: +26.68-43.90%
+python physics_based/03_PIO/pio_optimizer.py        # Path integral: XOR specialist
+
+# Ensemble optimizers
+python ensemble/01_QED/qed_optimizer.py             # First success: +26-65%
+
+# Meta optimizers
+python meta/01_COMP/comp_optimizer.py               # Compositional: 2/3 wins
+python meta/02_ULTIMATE/test_ultimate.py            # Meta-learner: Concept proven
+
+# Autopoiesis
+python autopoiesis/01_GENESIS/v2.0/experiments/*/main.py  # Autopoietic system
 ```
 
 ### Test Problems
@@ -48,8 +54,10 @@ Results saved to each directory's `results/` folder as PNG images.
 The codebase represents an evolutionary journey through 8 distinct optimization paradigms:
 
 ```
-01_LAML → 02_QED → 03_LAML_Q → 05_COMP → 06_PIO → 07_ULTIMATE → 08_GENESIS
-(Failed)  (Success) (Redeemed)  (Interpretable) (Specialist) (Adaptive)  (Paradigm Shift)
+physics_based/          ensemble/           meta/               autopoiesis/
+├── 01_LAML (Failed)    ├── 01_QED          ├── 01_COMP         └── 01_GENESIS
+├── 02_LAML_Q           └── 02_HYBRID       └── 02_ULTIMATE
+└── 03_PIO
 ```
 
 **Performance Summary**:
@@ -89,9 +97,9 @@ class Primitive:
 ```
 
 **Key Files**:
-- `05_COMP/primitives.py` - Template for implementing primitives
-- `07_ULTIMATE/primitives.py` - Extended primitive set
-- `08_GENESIS/v2.0/core/autopoietic_entity.py` - Beyond optimization
+- `meta/01_COMP/primitives.py` - Template for implementing primitives
+- `meta/02_ULTIMATE/primitives.py` - Extended primitive set
+- `autopoiesis/01_GENESIS/v2.0/core/autopoietic_entity.py` - Beyond optimization
 
 #### Pattern 2: Context-Aware Strategy Selection (COMP, ULTIMATE)
 
@@ -115,9 +123,9 @@ class OptimizationContext:
 ```
 
 **Implementation**:
-- `05_COMP/context.py` - State tracking
-- `05_COMP/weight_functions.py` - Context → primitive weights
-- `07_ULTIMATE/policy_network.py` - Neural policy for weight selection
+- `meta/01_COMP/context.py` - State tracking
+- `meta/01_COMP/weight_functions.py` - Context → primitive weights
+- `meta/02_ULTIMATE/policy_network.py` - Neural policy for weight selection
 
 #### Pattern 3: Ensemble/Multi-Agent (QED, LAML-Q, PIO)
 
@@ -143,9 +151,9 @@ class EnsembleOptimizer:
 ```
 
 **Key Files**:
-- `02_QED/qed_optimizer.py` - Quantum-inspired ensemble (cleanest implementation)
-- `03_LAML_Q/laml_q.py` - Endpoint prediction ensemble
-- `06_PIO/pio_optimizer.py` - Path integral sampling
+- `ensemble/01_QED/qed_optimizer.py` - Quantum-inspired ensemble (cleanest implementation)
+- `physics_based/02_LAML_Q/laml_q.py` - Endpoint prediction ensemble
+- `physics_based/03_PIO/pio_optimizer.py` - Path integral sampling
 
 #### Pattern 4: Autopoietic Self-Organization (GENESIS v2.0)
 
@@ -181,9 +189,9 @@ class AutopoieticEntity:
 - Meta-controller for architecture evolution
 
 **Key Files**:
-- `08_GENESIS/v2.0/design/architecture_spec.md` - Complete v2.0 design
-- `08_GENESIS/v2.0/core/autopoietic_entity.py` - Core implementation
-- `08_GENESIS/experiments/*/README.md` - Experimental results
+- `autopoiesis/01_GENESIS/v2.0/design/architecture_spec.md` - Complete v2.0 design
+- `autopoiesis/01_GENESIS/v2.0/core/autopoietic_entity.py` - Core implementation
+- `autopoiesis/01_GENESIS/experiments/*/README.md` - Experimental results
 
 ### Hybrid Learning System (GENESIS v2.0)
 
@@ -272,7 +280,7 @@ When extending this codebase:
 
 ### Adding New Primitives
 ```python
-# 1. Inherit from Primitive base class (see 05_COMP/primitives.py)
+# 1. Inherit from Primitive base class (see meta/01_COMP/primitives.py)
 class MyPrimitive(Primitive):
     def compute_update(self, network, X, y, context):
         # Implement your strategy
@@ -355,20 +363,20 @@ Currently in design/early implementation phase:
 **For understanding research progression**:
 1. `README.md` - Overview and results
 2. `docs/THE_JOURNEY.md` - Evolution of ideas (if exists)
-3. `02_QED/qed_optimizer.py` - First success (easiest to understand)
-4. `05_COMP/` - Best code architecture
-5. `08_GENESIS/v2.0/design/architecture_spec.md` - Cutting edge
+3. `ensemble/01_QED/qed_optimizer.py` - First success (easiest to understand)
+4. `meta/01_COMP/` - Best code architecture
+5. `autopoiesis/01_GENESIS/v2.0/design/architecture_spec.md` - Cutting edge
 
 **For implementing new algorithms**:
-1. Study `05_COMP/primitives.py` - Clean abstraction pattern
-2. Review `05_COMP/context.py` - State tracking
-3. Check `02_QED/qed_optimizer.py` - Ensemble pattern
-4. Reference `07_ULTIMATE/ultimate_optimizer.py` - Meta-learning pattern
+1. Study `meta/01_COMP/primitives.py` - Clean abstraction pattern
+2. Review `meta/01_COMP/context.py` - State tracking
+3. Check `ensemble/01_QED/qed_optimizer.py` - Ensemble pattern
+4. Reference `meta/02_ULTIMATE/ultimate_optimizer.py` - Meta-learning pattern
 
 **For GENESIS development**:
-1. Read `08_GENESIS/v2.0/design/architecture_spec.md` completely
-2. Check experimental results in `08_GENESIS/experiments/*/README.md`
-3. Study core entity in `08_GENESIS/v2.0/core/autopoietic_entity.py`
+1. Read `autopoiesis/01_GENESIS/v2.0/design/architecture_spec.md` completely
+2. Check experimental results in `autopoiesis/01_GENESIS/experiments/*/README.md`
+3. Study core entity in `autopoiesis/01_GENESIS/v2.0/core/autopoietic_entity.py`
 
 ## Research Philosophy
 
